@@ -18,17 +18,28 @@
 
 namespace JvH\IsotopeGooglefeedBundle;
 
+use DateTime;
+use DateTimeInterface;
+use Isotope\Model\Product;
 use Krabo\IsotopeStockBundle\Helper\ProductHelper;
 
 class EventListeners {
 
-  public function feedItem($strType, $objItem, $objProduct) {
-    if ($strType == 'googlebase') {
+  public function feedItem($strType, $objItem, Product $objProduct) {
+    if ($strType == 'jvh_googlebase') {
       $objItem->gtin = $objProduct->gtin;
       $objItem->mpn = $objProduct->sku;
       $objItem->availability = 'out of stock';
-      if (ProductHelper::isProductAvailableToOrder($objProduct->id)) {
+      if (!$objProduct->isostock_preorder && ProductHelper::isProductAvailableToOrder($objProduct->id)) {
         $objItem->availability = 'in stock';
+      } elseif ($objProduct->isostock_preorder) {
+        if (ProductHelper::isProductAvailableToOrder($objProduct->id)) {
+          $objItem->availability = 'preorder';
+          $availabilityDate = new DateTime();
+          $availabilityDate->setTimestamp($objProduct->isotope_packaging_slip_scheduled_shipping_date);
+          $availabilityDate->modify('+1 day');
+          $objItem->availability_date = $availabilityDate->format(DateTimeInterface::ATOM);
+        }
       }
     }
     return $objItem;

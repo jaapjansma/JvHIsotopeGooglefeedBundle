@@ -16,10 +16,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$GLOBALS['ISO_FEEDS']['jvh_googlebase'] = [
-  'feed'	=> array('Rhyme\IsotopeFeedsBundle\Feed\GoogleMerchant', 'generate'),
-  'item'	=> \JvH\IsotopeGooglefeedBundle\FeedItem::class,
-  'format'=> 'rss',
-];
-
-$GLOBALS['ISO_HOOKS']['feedItem'][] = [\JvH\IsotopeGooglefeedBundle\EventListeners::class, 'feedItem'];
+$GLOBALS['TL_LANG']['ISO_FEEDS']['jvh_googlebase'] = 'Google Feeds (JvH)';

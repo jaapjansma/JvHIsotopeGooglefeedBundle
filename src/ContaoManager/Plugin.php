@@ -22,6 +22,7 @@ use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Config\ConfigInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Rhyme\IsotopeFeedsBundle\RhymeIsotopeFeedsBundle;
 
 class Plugin implements BundlePluginInterface {
 
@@ -33,7 +34,7 @@ class Plugin implements BundlePluginInterface {
   public function getBundles(ParserInterface $parser) {
     return [
       BundleConfig::create('JvH\IsotopeGooglefeedBundle\IsotopeGooglefeedBundle')
-      ->setLoadAfter(['isotope'])
+      ->setLoadAfter(['isotope', RhymeIsotopeFeedsBundle::class])
     ];
   }
 
