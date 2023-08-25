@@ -29,7 +29,7 @@ class EventListeners {
     if ($strType == 'jvh_googlebase') {
       $objItem->gtin = $objProduct->gtin;
       $objItem->mpn = $objProduct->sku;
-      $objItem->brand = $objProduct->brand;
+      $objItem->brand = $objProduct->gid_brand;
       $objItem->availability = 'out of stock';
       if (ProductHelper::isProductAvailableToOrder($objProduct->id)) {
         $objItem->availability = 'in stock';
