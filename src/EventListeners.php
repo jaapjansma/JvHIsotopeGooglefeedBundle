@@ -31,14 +31,14 @@ class EventListeners {
       $objItem->mpn = $objProduct->sku;
       $objItem->brand = $objProduct->gid_brand;
       $objItem->availability = 'out of stock';
-      if (ProductHelper::isProductAvailableToOrder($objProduct->id)) {
-        $objItem->availability = 'in stock';
-      } elseif ($objProduct->isostock_preorder || $objProduct->isotope_packaging_slip_scheduled_shipping_date) {
+      if ($objProduct->isostock_preorder || $objProduct->isotope_packaging_slip_scheduled_shipping_date) {
         $objItem->availability = 'preorder';
         $availabilityDate = new DateTime();
         $availabilityDate->setTimestamp($objProduct->isotope_packaging_slip_scheduled_shipping_date);
         $availabilityDate->modify('+1 day');
         $objItem->availability_date = $availabilityDate->format(DateTimeInterface::ATOM);
+      } elseif (ProductHelper::isProductAvailableToOrder($objProduct->id)) {
+        $objItem->availability = 'in stock';
       }
     }
     return $objItem;
