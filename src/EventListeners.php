@@ -36,8 +36,8 @@ class EventListeners {
 
       $titleParts = [];
       $title = $objProduct->name;
-      $sql = "SELECT `name`, `description`, `gid_description` FROM `tl_iso_product` WHERE `pid` = 2233 AND `language` = 'nl'";
-      $objNlProducts = Database::getInstance()->prepare($sql)->execute();
+      $sql = "SELECT `name`, `description`, `gid_description` FROM `tl_iso_product` WHERE `pid` = ? AND `language` = 'nl'";
+      $objNlProducts = Database::getInstance()->prepare($sql)->execute($objProduct->id);
       if ($objProductNl = $objNlProducts->fetchAssoc()) {
         $title = $objProductNl['name'];
         $strDescription = $objProductNl['description'];
@@ -53,7 +53,10 @@ class EventListeners {
       }
       $titleParts[] = $title;
       if ($objProduct->aantal_stukjes) {
-        $titleParts[] = $objProduct->aantal_stukjes . ' stukjes';
+        $aantalStukjes = Database::getInstance()->prepare("SELECT `tl_iso_attribute_option`.`label` as `label` FROM `tl_iso_attribute_option` INNER JOIN `tl_iso_attribute` ON `tl_iso_attribute_option`.`pid` = `tl_iso_attribute`.`id` WHERE `tl_iso_attribute`.`field_name` = 'aantal_stukjes' AND `tl_iso_attribute_option`.`id` = ?")->execute($objProduct->aantal_stukjes);
+        if ($aantalStukjes = $aantalStukjes->fetchAssoc()) {
+          $titleParts[] = $aantalStukjes['label'] . ' stukjes';
+        }
       }
       $objItem->title = implode(" - ", $titleParts);
 
