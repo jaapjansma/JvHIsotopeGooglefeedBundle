@@ -18,6 +18,8 @@
 
 namespace JvH\IsotopeGooglefeedBundle;
 
+use Contao\Database;
+use Contao\InsertTags;
 use DateTime;
 use DateTimeInterface;
 use Isotope\Model\Product;
@@ -27,9 +29,34 @@ class EventListeners {
 
   public function feedItem($strType, $objItem, Product $objProduct) {
     if ($strType == 'jvh_googlebase') {
-      $objItem->gtin = $objProduct->gtin;
-      $objItem->mpn = $objProduct->sku;
       $objItem->brand = $objProduct->gid_brand;
+      $objItem->id = $objProduct->sku;
+      $objItem->mpn = $objProduct->sku;
+      $objItem->gtin = $objProduct->gtin;
+
+      $titleParts = [];
+      $title = $objProduct->name;
+      $sql = "SELECT `name`, `description`, `gid_description` FROM `tl_iso_product` WHERE `pid` = 2233 AND `language` = 'nl'";
+      $objNlProducts = Database::getInstance()->prepare($sql)->execute();
+      if ($objProductNl = $objNlProducts->fetchAssoc()) {
+        $title = $objProductNl['name'];
+        $strDescription = $objProductNl['description'];
+        if (!empty($objProductNl['gid_description'])) {
+          $strDescription = $objProductNl['gid_description'];
+        }
+
+        $objIt = new InsertTags();
+        $objItem->description = $objIt->replace($strDescription, TRUE);
+      }
+      if ($objProduct->gid_brand) {
+        $titleParts[] = $objProduct->gid_brand;
+      }
+      $titleParts[] = $title;
+      if ($objProduct->aantal_stukjes) {
+        $titleParts[] = $objProduct->aantal_stukjes . ' stukjes';
+      }
+      $objItem->title = implode(" - ", $titleParts);
+
       $objItem->availability = 'out of stock';
       if ($objProduct->isostock_preorder || $objProduct->isotope_packaging_slip_scheduled_shipping_date) {
         $objItem->availability = 'preorder';
