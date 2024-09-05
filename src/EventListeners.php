@@ -64,7 +64,7 @@ class EventListeners {
       if ($objProduct->isostock_preorder || $objProduct->isotope_packaging_slip_scheduled_shipping_date) {
         $objItem->availability = 'preorder';
         $availabilityDate = new DateTime();
-        $availabilityDate->setTimestamp($objProduct->isotope_packaging_slip_scheduled_shipping_date);
+        $availabilityDate->setTimestamp((int) $objProduct->isotope_packaging_slip_scheduled_shipping_date);
         $availabilityDate->modify('+1 day');
         $objItem->availability_date = $availabilityDate->format(DateTimeInterface::ATOM);
       } elseif (ProductHelper::isProductAvailableToOrder($objProduct->id)) {
